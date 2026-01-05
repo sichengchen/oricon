@@ -33,9 +33,7 @@
           {#if isMobile}
             <text
               x={labelOffset + 12}
-              y="6"
-              dominant-baseline="hanging"
-              alignment-baseline="hanging"
+              y={barHeight / 2 - 4}
             >
               <tspan class="bar-text-rank" x={labelOffset + 10} dy="0">
                 #{item.rank}
@@ -43,17 +41,20 @@
               <tspan class="bar-text-title" x={labelOffset + 40} dy="0">
                 {item.title}
               </tspan>
-              <tspan class="bar-text-artist" x={labelOffset + 40} dy="20">
-                {item.artist}
-              </tspan>
+            </text>
+            <text
+              class="bar-text-artist"
+              x={labelOffset + 40}
+              y={barHeight / 2 + 16}
+            >
+              {item.artist}
             </text>
           {:else}
             <text
               class="bar-text-title"
               x={labelOffset + 12}
               y={barHeight / 2 + 2}
-              dominant-baseline="middle"
-              alignment-baseline="middle"
+              dy="0.35em"
             >
               <tspan class="bar-text-rank">#{item.rank}</tspan>
               <tspan dx="8">
