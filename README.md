@@ -4,7 +4,7 @@ Oricon Weekly Top Singles (1968 - 2008)
 
 [Live Demo](https://oricon.scchan.moe)
 
-# 概要
+## 概要
 - オリコン週間シングルランキング（1968-2008）
 - 週ごとのランキング再生
 - 速度切替
