@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Shippori+Mincho+B1:wght@400;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html,
+  body {
+    height: 100%;
+    background: transparent;
+  }
+
+  body {
+    @apply min-h-screen font-sans text-slate-900;
+    position: relative;
+    isolation: isolate;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: radial-gradient(circle at top, #f2a3a5, #d6a9c8 45%, #9cb9e1 100%);
+    background-size: 180% 180%;
+    background-position: 0 0;
+    animation: gradient-drift 18s ease-in-out infinite, gradient-pulse 22s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background:
+      radial-gradient(circle, rgba(20, 20, 20, 0.32) 0.85px, transparent 1.5px),
+      radial-gradient(circle, rgba(255, 255, 255, 0.4) 0.75px, transparent 1.45px);
+    background-size: 4.5px 4.5px, 4.5px 4.5px;
+    background-position: 0 0, 2.25px 2.25px;
+    opacity: 0.85;
+    filter: blur(0.4px);
+    pointer-events: none;
+  }
+
+  #app {
+    @apply min-h-screen;
+    position: relative;
+    z-index: 2;
+  }
+}
+
+@keyframes gradient-drift {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 30%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes hue-shift {
+  0% {
+    filter: hue-rotate(0deg) saturate(0.95);
+  }
+  50% {
+    filter: hue-rotate(18deg) saturate(1.05);
+  }
+  100% {
+    filter: hue-rotate(0deg) saturate(0.95);
+  }
+}
+
+@keyframes gradient-pulse {
+  0% {
+    background: radial-gradient(circle at top, #f2a3a5, #d6a9c8 45%, #9cb9e1 100%);
+  }
+  50% {
+    background: radial-gradient(circle at top, #f2a3a5, #c7a9da 45%, #9cb9e1 100%);
+  }
+  100% {
+    background: radial-gradient(circle at top, #f2a3a5, #d6a9c8 45%, #9cb9e1 100%);
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-full px-5 py-2 text-sm font-semibold transition;
+  }
+
+  .btn-primary {
+    @apply bg-slate-900 text-white hover:bg-slate-800;
+  }
+
+  .btn-ghost {
+    @apply border border-slate-900/80 text-slate-900 hover:bg-slate-900 hover:text-white;
+  }
+
+  .pill {
+    @apply inline-flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm;
+  }
+
+  .range {
+    @apply w-40 accent-slate-900;
+  }
+
+  .card {
+    @apply rounded-3xl border border-slate-900 bg-[#f8f2f1] p-3 shadow-[0_20px_40px_rgba(15,23,42,0.12)] sm:p-4;
+  }
+
+  .chart-bg {
+    @apply fill-black/5 stroke-black/10;
+  }
+
+  .bar-text-title {
+    @apply fill-white text-[15px] font-semibold;
+    font-family: 'Shippori Mincho B1', serif;
+  }
+
+  .bar-text-artist {
+    @apply fill-white text-[12px];
+    font-family: 'Shippori Mincho B1', serif;
+  }
+
+  .bar-text-rank {
+    @apply fill-white/90 text-[11px] font-semibold;
+  }
+}
+
+@media (max-width: 640px) {
+  .bar-text-title {
+    font-size: 18px;
+  }
+
+  .bar-text-artist {
+    font-size: 16px;
+  }
+
+  .bar-text-rank {
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,71 @@
+<script>
+  export let currentItems = []
+  export let chartWidth = 1000
+  export let chartHeight = 600
+  export let innerWidth = 760
+  export let margin = { top: 90, right: 120, bottom: 60, left: 220 }
+  export let bandHeight = 34
+  export let barHeight = 26
+  export let labelOffset = 28
+  export let isMobile = false
+  export let barWidthScale = 1
+
+  const getBarWidth = () => innerWidth * barWidthScale
+</script>
+
+<section class="card">
+  <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} preserveAspectRatio="xMidYMid meet" class="w-full h-auto">
+    <g transform={`translate(${margin.left}, ${margin.top})`}>
+      {#each currentItems as item (item.key)}
+        <g
+          class="transition-transform duration-500 ease-out"
+          style={`transform: translateY(${item.index * bandHeight}px);`}
+        >
+          <rect
+            x={labelOffset}
+            y="0"
+            width={getBarWidth()}
+            height={barHeight}
+            rx="8"
+            fill={item.color}
+            class="transition-all duration-500 ease-out"
+          />
+          {#if isMobile}
+            <text
+              x={labelOffset + 12}
+              y="6"
+              dominant-baseline="hanging"
+              alignment-baseline="hanging"
+            >
+              <tspan class="bar-text-rank" x={labelOffset + 10} dy="0">
+                #{item.rank}
+              </tspan>
+              <tspan class="bar-text-title" x={labelOffset + 40} dy="0">
+                {item.title}
+              </tspan>
+              <tspan class="bar-text-artist" x={labelOffset + 40} dy="20">
+                {item.artist}
+              </tspan>
+            </text>
+          {:else}
+            <text
+              class="bar-text-title"
+              x={labelOffset + 12}
+              y={barHeight / 2 + 2}
+              dominant-baseline="middle"
+              alignment-baseline="middle"
+            >
+              <tspan class="bar-text-rank">#{item.rank}</tspan>
+              <tspan dx="8">
+              {item.title}
+              </tspan>
+              <tspan class="bar-text-artist" dx="10">
+                {item.artist}
+              </tspan>
+            </text>
+          {/if}
+        </g>
+      {/each}
+    </g>
+  </svg>
+</section>
