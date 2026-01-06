@@ -247,14 +247,19 @@
     <div
       class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 py-6"
       role="presentation"
-      on:click={dismissIntroModal}
     >
+      <button
+        class="absolute inset-0 z-0 h-full w-full bg-transparent"
+        type="button"
+        aria-label="Dismiss intro"
+        on:click={dismissIntroModal}
+      ></button>
       <div
-        class="card w-full max-w-xl shadow-[0_24px_48px_rgba(15,23,42,0.18)]"
+        class="card relative z-10 w-full max-w-xl shadow-[0_24px_48px_rgba(15,23,42,0.18)]"
         role="dialog"
         aria-modal="true"
         aria-labelledby="intro-title"
-        on:click|stopPropagation
+        tabindex="-1"
       >
         <div class="flex items-start justify-between gap-4">
           <div>
@@ -263,9 +268,9 @@
             </div>
             <h2
               id="intro-title"
-              class="ml-2 font-display text-2xl font-bold uppercase tracking-[0.08em] text-slate-900 sm:text-3xl"
+              class="ml-2 font-display text-2xl font-bold uppercase text-slate-900 sm:text-3xl"
             >
-              Welcome to Oricon Charts
+              Welcome to Oricon Charts Viewer
             </h2>
             <p class="ml-2 mt-2 text-sm text-slate-700">
               First time here? Here are two quick tips to get you started.
@@ -329,9 +334,30 @@
     </div>
   {/if}
 
-  <footer
-    class="text-center text-xs"
-  >
-    Website by <a class="underline" href="https://scchan.moe" target="_blank" rel="noopener noreferrer">scchan.moe</a> | <a href="https://github.com/sichengchen/oricon" class="underline" target="_blank" rel="noopener noreferrer">View on Github</a>
+  <footer class="text-center text-xs text-slate-800">
+    <div>
+      Website by
+      <a class="underline" href="https://scchan.moe" target="_blank" rel="noopener noreferrer">
+        scchan.moe
+      </a>
+      |
+      <a
+        href="https://github.com/sichengchen/oricon"
+        class="underline"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        View on Github
+      </a>
+    </div>
+    <div class="mt-2 text-[10px] leading-relaxed">
+      <div>
+        This site is not affiliated with Oricon. It only collects and organizes
+        publicly available chart data.
+      </div>
+      <div class="mt-1">
+        本サイトはオリコンとは一切関係ありません。公開されているチャートデータを収集・整理して紹介しています。
+      </div>
+    </div>
   </footer>
 </main>
