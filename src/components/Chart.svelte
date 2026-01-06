@@ -18,8 +18,7 @@
     <g transform={`translate(${margin.left}, ${margin.top})`}>
       {#each currentItems as item (item.key)}
         <g
-          class="transition-transform duration-500 ease-out"
-          style={`transform: translateY(${item.index * bandHeight}px);`}
+          style={`transform: translateY(${item.index * bandHeight}px); opacity: ${item.opacity ?? 1};`}
         >
           <rect
             x={labelOffset}
@@ -28,7 +27,6 @@
             height={barHeight}
             rx="8"
             fill={item.color}
-            class="transition-all duration-500 ease-out"
           />
           {#if isMobile}
             <text

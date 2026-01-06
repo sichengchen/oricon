@@ -3,8 +3,8 @@
 
   export let isPlaying = false
   export let disabled = false
-  export let speed = 900
-  export let baseSpeed = 900
+  export let speed = 1300
+  export let baseSpeed = 1300
   export let onPrev = () => {}
   export let onToggle = () => {}
   export let onNext = () => {}

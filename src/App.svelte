@@ -1,5 +1,7 @@
 <script>
   import { onDestroy, onMount } from 'svelte'
+  import { linear } from 'svelte/easing'
+  import { tweened } from 'svelte/motion'
   import * as d3 from 'd3'
   import Chart from './components/Chart.svelte'
   import Controls from './components/Controls.svelte'
@@ -19,12 +21,16 @@
   const mobileLabelOffset = 0
   const desktopBarWidthScale = 1
   const mobileBarWidthScale = 1
-  const baseSpeed = 900
+  const baseSpeed = 1300
+  const baseTransitionDuration = 420
+  const minTransitionDuration = 120
+  const fastSpeedThreshold = 4
 
   let dates = []
   let dataByDate = new Map()
 
   let currentIndex = 0
+  let previousIndex = 0
   let isPlaying = true
   let speed = baseSpeed
   let tickHandle = null
@@ -33,6 +39,17 @@
   let mediaQuery = null
   let handleMediaChange = null
   let loadError = ''
+
+  const transitionProgress = tweened(1, { duration: 0, easing: linear })
+  let progress = 1
+  const progressUnsubscribe = transitionProgress.subscribe((value) => {
+    progress = value
+  })
+
+  const startTransition = () => {
+    transitionProgress.set(0, { duration: 0 })
+    transitionProgress.set(1, { duration: transitionDuration, easing: linear })
+  }
 
   const parseNumber = (value) => {
     if (!value) return null
@@ -65,7 +82,9 @@
 
   const tick = () => {
     if (!isPlaying) return
+    previousIndex = currentIndex
     currentIndex = (currentIndex + 1) % dates.length
+    startTransition()
     tickHandle = setTimeout(tick, speed)
   }
 
@@ -87,11 +106,15 @@
   const moveBy = (delta) => {
     if (!dates.length) return
     stopPlayback()
+    previousIndex = currentIndex
     currentIndex = (currentIndex + delta + dates.length) % dates.length
+    startTransition()
   }
 
   const handleScrub = () => {
     stopPlayback()
+    previousIndex = currentIndex
+    transitionProgress.set(1, { duration: 0 })
   }
 
   onMount(() => {
@@ -123,6 +146,7 @@
 
   onDestroy(() => {
     stopPlayback()
+    progressUnsubscribe()
     if (mediaQuery && handleMediaChange) {
       if (mediaQuery.removeEventListener) {
         mediaQuery.removeEventListener('change', handleMediaChange)
@@ -133,23 +157,45 @@
   })
 
   $: currentDate = dates[currentIndex] || ''
+  $: previousDate = dates[previousIndex] || currentDate
   $: sortedItems = (dataByDate.get(currentDate) || [])
+    .slice()
+    .sort((a, b) => a.rank - b.rank)
+  $: previousItems = (dataByDate.get(previousDate) || [])
     .slice()
     .sort((a, b) => a.rank - b.rank)
   $: topItems = sortedItems
   $: topN = topItems.length
-  $: maxRank = topItems.length || 1
+  $: maxRank = Math.max(topItems.length, previousItems.length) || 1
   $: colorScale = d3
     .scaleLinear()
     .domain([1, Math.max(1, maxRank)])
     .range(['#d96a74', '#f2a3a5'])
-  $: currentItems = topItems.map((entry, index) => ({
-    ...entry,
-    value: 1,
-    index,
-    key: `${entry.title}__${entry.artist}`,
-    color: colorScale(entry.rank)
-  }))
+  $: previousRankByKey = new Map(
+    previousItems.map((entry) => [`${entry.title}__${entry.artist}`, entry.rank])
+  )
+  $: currentItems = topItems.map((entry) => {
+    const key = `${entry.title}__${entry.artist}`
+    const previousRank = previousRankByKey.get(key)
+    const startRank = previousRank ?? entry.rank
+    const displayRank = startRank + (entry.rank - startRank) * progress
+    return {
+      ...entry,
+      value: 1,
+      index: displayRank - 1,
+      key,
+      color: colorScale(displayRank),
+      opacity: previousRank == null ? progress : 1
+    }
+  })
+  $: speedMultiplier = baseSpeed / speed
+  $: transitionDuration =
+    speedMultiplier >= fastSpeedThreshold
+      ? Math.max(
+          minTransitionDuration,
+          Math.round(baseTransitionDuration / Math.sqrt(speedMultiplier))
+        )
+      : baseTransitionDuration
   $: margin = isMobile ? mobileMargin : desktopMargin
   $: barHeight = isMobile ? mobileBarHeight : desktopBarHeight
   $: barGap = isMobile ? mobileBarGap : desktopBarGap
