@@ -93,7 +93,7 @@
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center rounded-full px-5 py-2 text-sm font-semibold transition;
+    @apply inline-flex items-center justify-center rounded-full px-3 md:px-5 py-2 text-xs md:text-sm font-semibold transition;
   }
 
   .btn-primary {

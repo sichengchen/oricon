@@ -39,6 +39,9 @@
   let mediaQuery = null
   let handleMediaChange = null
   let loadError = ''
+  let showIntroModal = false
+
+  const introStorageKey = 'oricon_intro_seen'
 
   const transitionProgress = tweened(1, { duration: 0, easing: linear })
   let progress = 1
@@ -117,6 +120,31 @@
     transitionProgress.set(1, { duration: 0 })
   }
 
+  const dismissIntroModal = () => {
+    showIntroModal = false
+    try {
+      localStorage.setItem(introStorageKey, 'true')
+    } catch (error) {
+      console.warn('Failed to persist intro modal preference.', error)
+    }
+  }
+
+  const checkIntroModal = () => {
+    try {
+      showIntroModal = localStorage.getItem(introStorageKey) !== 'true'
+    } catch (error) {
+      showIntroModal = true
+      console.warn('Failed to read intro modal preference.', error)
+    }
+  }
+
+  const handleIntroKeydown = (event) => {
+    if (!showIntroModal) return
+    if (event.key === 'Escape') {
+      dismissIntroModal()
+    }
+  }
+
   onMount(() => {
     mediaQuery = window.matchMedia('(max-width: 640px)')
     handleMediaChange = () => {
@@ -142,6 +170,7 @@
       }
     }
     init()
+    checkIntroModal()
   })
 
   onDestroy(() => {
@@ -211,7 +240,57 @@
   $: isDisabled = !dates.length || !!loadError
 </script>
 
+<svelte:window on:keydown={handleIntroKeydown} />
+
 <main class="mx-auto grid min-h-screen max-w-5xl gap-6 px-4 py-6 md:px-10 md:py-10">
+  {#if showIntroModal}
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 py-6"
+      role="presentation"
+      on:click={dismissIntroModal}
+    >
+      <div
+        class="card w-full max-w-xl shadow-[0_24px_48px_rgba(15,23,42,0.18)]"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="intro-title"
+        on:click|stopPropagation
+      >
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <div class="pill mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-700">
+              Quick Guide
+            </div>
+            <h2
+              id="intro-title"
+              class="ml-2 font-display text-2xl font-bold uppercase tracking-[0.08em] text-slate-900 sm:text-3xl"
+            >
+              Welcome to Oricon Charts
+            </h2>
+            <p class="ml-2 mt-2 text-sm text-slate-700">
+              First time here? Here are two quick tips to get you started.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 grid gap-3 text-sm text-slate-800">
+          <div class="rounded-2xl border border-slate-900/10 bg-white/70 px-4 py-3">
+            Click the menu button in the top-left to expand controls and playback settings.
+          </div>
+          <div class="rounded-2xl border border-slate-900/10 bg-white/70 px-4 py-3">
+            Click any song to search it on Google.
+          </div>
+        </div>
+
+        <div class="mt-5 flex flex-wrap items-center justify-end gap-3">
+          <button class="btn btn-primary" on:click={dismissIntroModal}>
+            Got it
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
+
   <Header {topN} {currentDate} {isPlaying} onTogglePlay={togglePlayback} {isMobile}>
     <Controls
       bind:speed
