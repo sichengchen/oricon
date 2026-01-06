@@ -11,6 +11,22 @@
   export let barWidthScale = 1
 
   const getBarWidth = () => innerWidth * barWidthScale
+
+  const buildSearchQuery = (item) =>
+    [item?.title, item?.artist].filter(Boolean).join(' ').trim()
+
+  const openGoogleSearch = (item) => {
+    const query = buildSearchQuery(item)
+    if (!query) return
+    const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
+  const handleBarKeydown = (item, event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    event.preventDefault()
+    openGoogleSearch(item)
+  }
 </script>
 
 <section class="card">
@@ -18,7 +34,13 @@
     <g transform={`translate(${margin.left}, ${margin.top})`}>
       {#each currentItems as item (item.key)}
         <g
+          class="cursor-pointer"
           style={`transform: translateY(${item.index * bandHeight}px); opacity: ${item.opacity ?? 1};`}
+          on:click={() => openGoogleSearch(item)}
+          on:keydown={(event) => handleBarKeydown(item, event)}
+          tabindex="0"
+          role="link"
+          aria-label={`Search ${item.title} ${item.artist}`}
         >
           <rect
             x={labelOffset}
